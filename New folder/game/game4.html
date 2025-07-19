@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-image: linear-gradient(to bottom, #2c3e50, #3498db);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .simon-game {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .color-section {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            border-radius: 50%;
+            transition: opacity 0.5s, transform 0.5s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+        }
+        .red-button {
+            top: 0;
+            left: 0;
+            background-color: red;
+        }
+        .green-button {
+            top: 0;
+            right: 0;
+            background-color: green;
+        }
+        .blue-button {
+            bottom: 0;
+            left: 0;
+            background-color: blue;
+        }
+        .yellow-button {
+            bottom: 0;
+            right: 0;
+            background-color: yellow;
+        }
+        .color-section:hover {
+            transform: scale(1.1);
+        }
+        #score-section {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #start-button {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.5s;
+        }
+        #start-button:hover {
+            background-color: #3e8e41;
+        }
+        #start-button:active {
+            transform: scale(0.9);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .difficulty-section {
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 10px;
+            background-color: #f0f0f0;
+            color: #000;
+            cursor: pointer;
+            transition: background-color 0.5s;
+            font-size: 16px;
+            font-weight: bold;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, gray 50%), linear-gradient(135deg, gray 50%, transparent 50%);
+            background-position: calc(100% - 20px) calc(1em + 2px), calc(100% - 15px) calc(1em + 2px), calc(100% - 2.5em) 0.5em;
+            background-size: 5px 5px, 5px 5px, 1px 1.5em;
+            background-repeat: no-repeat;
+            border: 1px solid #ddd;
+        }
+        select:hover {
+            background-color: #e0e0e0;
+        }
+        select option {
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #fff;
+            color: #000;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="score-section">Score: 0 | Best Score: 0</div>
+        <div class="difficulty-section">
+            <select id="difficulty-level">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <button id="start-button" class="btn">Start Game</button>
+        <div class="simon-game">
+            <div class="color-section red-button" id="red-button" name="red">Red</div>
+            <div class="color-section green-button" id="green-button">Green</div>
+            <div class="color-section blue-button" id="blue-button">Blue</div>
+            <div class="color-section yellow-button" id="yellow-button">Yellow</div>
+        </div>
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p id="modal-text"></p>
+                <button id="play-again-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <audio id="red-sound" src="https://s3.amazonaws.com/freecodecamp/simonSound1.mp3" preload="auto"></audio>
+    <audio id="green-sound" src="https://s3.amazonaws.com/freecodecamp/simonSound2.mp3" preload="auto"></audio>
+    <audio id="blue-sound" src="https://s3.amazonaws.com/freecodecamp/simonSound3.mp3" preload="auto"></audio>
+    <audio id="yellow-sound" src="https://s3.amazonaws.com/freecodecamp/simonSound4.mp3" preload="auto"></audio>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        let sequence = [];
+        let userSequence = [];
+        let score = 0;
+        let bestScore = 0;
+        let gameStarted = false;
+        let difficultyLevel = 'easy';
+        const colors = ['red', 'green', 'blue', 'yellow'];
+        const colorButtons = {
+            'red': document.getElementById('red-button'),
+            'green': document.getElementById('green-button'),
+            'blue': document.getElementById('blue-button'),
+            'yellow': document.getElementById('yellow-button'),
+        };
+        const scoreDisplay = document.getElementById('score-section');
+        const soundMap = {
+            'red': document.getElementById('red-sound'),
+            'green': document.getElementById('green-sound'),
+            'blue': document.getElementById('blue-sound'),
+            'yellow': document.getElementById('yellow-sound'),
+        };
+        const startButton = document.getElementById('start-button');
+        const modal = document.getElementById('modal');
+        const closeButton = document.querySelector('.close');
+        const playAgainButton = document.getElementById('play-again-button');
+        const modalText = document.getElementById('modal-text');
+        const difficultySelect = document.getElementById('difficulty-level');
+
+        difficultySelect.addEventListener('change', (e) => {
+            difficultyLevel = e.target.value;
+        });
+
+        function generateSequence() {
+            sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            playSequence();
+        }
+
+        function playSequence() {
+            let index = 0;
+            let interval;
+            switch(difficultyLevel) {
+                case 'easy':
+                    interval = 1000;
+                    break;
+                case 'medium':
+                    interval = 500;
+                    break;
+                case 'hard':
+                    interval = 250;
+                    break;
+            }
+            const intervalId = setInterval(() => {
+                const color = sequence[index];
+                const section = colorButtons[color];
+                section.style.opacity = 0.5;
+                soundMap[color].play();
+                setTimeout(() => {
+                    section.style.opacity = 1;
+                }, 500);
+                index++;
+                if (index >= sequence.length) {
+                    clearInterval(intervalId);
+                    waitForUser();
+                }
+            }, interval);
+        }
+
+        function waitForUser() {
+            setTimeout(() => {
+                userSequence = [];
+            }, 1000);
+        }
+
+        function checkUserSequence() {
+            if (userSequence.length === sequence.length) {
+                if (JSON.stringify(userSequence) === JSON.stringify(sequence)) {
+                    score++;
+                    if(score > bestScore) {
+                        bestScore = score;
+                    }
+                    scoreDisplay.textContent = `Score: ${score} | Best Score: ${bestScore}`;
+                    userSequence = [];
+                    generateSequence();
+                } else {
+                    modalText.textContent = `Game Over! Final Score: ${score} | Best Score: ${bestScore}`;
+                    modal.style.display = "block";
+                    sequence = [];
+                    userSequence = [];
+                    gameStarted = false;
+                    startButton.disabled = false;
+                }
+            }
+        }
+
+        Object.keys(colorButtons).forEach(color => {
+            colorButtons[color].addEventListener('click', () => {
+                if (gameStarted) {
+                    userSequence.push(color);
+                    colorButtons[color].style.opacity = 0.5;
+                    soundMap[color].play();
+                    setTimeout(() => {
+                        colorButtons[color].style.opacity = 1;
+                    }, 500);
+                    checkUserSequence();
+                }
+            });
+        });
+
+        startButton.addEventListener('click', () => {
+            gameStarted = true;
+            startButton.disabled = true;
+            sequence = [];
+            userSequence = [];
+            score = 0;
+            scoreDisplay.textContent = 'Score: 0 | Best Score: 0';
+            bestScore = 0;
+            generateSequence();
+        });
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = "none";
+        });
+
+        playAgainButton.addEventListener('click', () => {
+            modal.style.display = "none";
+            startButton.click();
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
